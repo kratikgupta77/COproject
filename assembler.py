@@ -51,3 +51,21 @@ for _ in range(varLines):
         continue
     else:
         break
+labels = {}
+encounteredErrors = []
+
+for i, line in enumerate(assemblyCode, 1):
+    if not line:
+        continue
+
+    if ':' in line:
+        label, rest_of_line = line.split(':', maxsplit=1)
+        if label in labels:
+            encounteredErrors.append(f"ERROR at Line {i + varLines}: Multiple declarations for the same label found")
+            continue
+        else:
+            labels[label] = binary8bit(i-1)
+            line = rest_of_line.strip()
+
+    currentLine = line.split()
+    # process the rest of the line here
