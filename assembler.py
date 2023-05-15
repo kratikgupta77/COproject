@@ -1,4 +1,5 @@
 import sys
+import random
 regs = {
      'R0':'000',
      'R1':'001',
@@ -10,7 +11,7 @@ regs = {
      'FLAGS':'111'
      }
      
-opcodeTable={   "var": "",
+opcodeTable={   "var": "001",
                 "add": "0000000",
                 "sub": "0000100",
                 "mov": ["000100", "0001100000"], 
@@ -32,6 +33,21 @@ opcodeTable={   "var": "",
                 "hlt": "1101000000000000"
 }
 
+memory_used = []
+
+variables = {}
+
+def assign_add(var):
+    x = random.randint(1, 127)
+    if x in memory_used:
+        return assign_add(var)
+    address = bin(x).replace("0b", "").zfill(7)
+    variables[var] = address
+    memory_used.append(address)
+    return address
+
+
+
 def dec_to_bin(n):
     i=0
     num=0
@@ -49,12 +65,8 @@ Errors = 0
 Source = []
 #for line in sys.stdin:
 #    Source.append(line)
-with open("k12.txt", "r") as file:
-        for line in file:
-            Source.append(line.rstrip())
-
-
-print(source)
+for line in sys.stdin:
+    Source.append(line)
 for i in range(len(Source)):
     linenum = i+1
     labels = []
@@ -68,7 +80,7 @@ for i in range(len(Source)):
         
         if newcurr[0] in opcodeTable.keys() :
             if newcurr[0] in ["add", "sub", "mul", "xor", "or", "and"]:
-                if len(newcurr) != 3:
+                if len(newcurr[0]) != 3:
                     Errors += 1
                 elif newcurr[1] not in regs.keys() or newcurr[2] not in regs.keys() or newcurr[3] not in regs.keys():
                     Errors += 1
@@ -84,13 +96,12 @@ for i in range(len(Source)):
                     if len(newcurr) != 2:
                         Errors += 1
                     else:
-    
                         Out.append(tempval + regs[newcurr[1]] + dec_to_bin(int(newcurr[2][1:])))
                     out_index+=1
                     i += 1
                 else :
                     opcodeTable[newcurr[0][1]] = tempval
-                    if len(newcurr) != 2:
+                    if len(newcurr[0]) != 3:
                         Errors += 1
                     else:
     
@@ -99,7 +110,7 @@ for i in range(len(Source)):
                     i += 1
             
             elif newcurr[0] in ["rs", "ls"]:
-                if len(newcurr) != 3:
+                if len(newcurr[0]) != 2:
                     Errors += 1
                 else :
 
@@ -108,7 +119,7 @@ for i in range(len(Source)):
                 i += 1
             
             elif newcurr[0] in ["div", "not", "cmp"]:
-                if len(newcurr) != 3 :
+                if len(newcurr[0]) != 3 :
                     Errors += 1 
                 else :
 
@@ -127,41 +138,35 @@ for i in range(len(Source)):
                 out_index += 1
                 i += 1
             
-            elif newcurr[0] in ["jmp", "jlt", "jgt", "je"]:
-                if len(newcurr) != 2:
-                    Errors += 1
-                elif newcurr[1][0] != "$":
-                    Errors += 1
-                else :
-
-                   Out.append(opcodeTable[newcurr[0]] + dec_to_bin(int(newcurr[1][1:])))
+            elif newcurr[0] in ["jmp", "jlt", "jgt", "je"]:                
+                Out.append(opcodeTable[newcurr[0]] + dec_to_bin(int(newcurr[1][1:])))
                 out_index += 1
                 i += 1
         
     elif curr[0] in opcodeTable.keys():
+        
         if curr[0] in ["add", "sub", "mul", "xor", "or", "and"]:
-            if len(curr) != 3:
+            if len(curr[0]) != 3:
                 Errors += 1
             elif curr[1] not in regs.keys() or curr[2] not in regs.keys():
                 Errors += 1
             else:
-                Out.append(opcodeTable[curr[0]] + regs[curr[1]] + regs[curr[2]] + regs[curr[2]])
+                Out.append(opcodeTable[curr[0]] + regs[curr[1]] + regs[curr[2]] + regs[curr[3]])
             out_index += 1
             i += 1
 
         elif curr[0] == "mov":
             tempval = 0
             if curr[2][0] == "$":
-                opcodeTable[curr[0][0]] = tempval
+                tempval=opcodeTable[curr[0]][0] 
                 if len(curr) != 3:
                     Errors += 1
                 else:
-
-                    Out.append(tempval + regs[curr[1]] + dec_to_bin(int(curr[2][1:])))
+                    Out.append(str(tempval) + regs[curr[1]] + bin(int(curr[2][1:])).replace("0b", "").zfill(7))
                 out_index += 1
                 i += 1
             else:
-                opcodeTable[curr[0][1]] = tempval
+                tempval = opcodeTable[curr[0]][1]
                 if len(curr) != 3:
                     Errors += 1
                 else:
@@ -187,26 +192,26 @@ for i in range(len(Source)):
             i += 1
                 
         elif curr[0] in ["ld", "st"]:
-            if len(curr) != 3:
+            if len(curr[0]) != 2:
                 Errors += 1
-            elif curr[2][0] != "$":
+            elif curr[2][0] == "$":
                 Errors += 1
             else:
-                Out.append(opcodeTable[curr[0]] + regs[curr[1]] + bin(int(curr[2][1:])).replace("0b", "").zfill(7))
+                Out.append(opcodeTable[curr[0]] + regs[curr[1]]+variables[curr[2]])
             out_index += 1
             i += 1
 
         elif curr[0] in ["jmp", "jlt", "jgt", "je"]:
-            if len(curr) != 2:
-                Errors += 1
-            elif curr[1][0] != "$":
+            if curr[1][0] == "$":
                 Errors += 1
             else:
-                Out.append(opcodeTable[curr[0]] + dec_to_bin(int(curr[1][1:])))
+                Out.append(opcodeTable[curr[0]] + bin(int(curr[1][1:])).replace("0b", "").zfill(7))
             out_index += 1
             i += 1
 
         elif curr[0] == "var":
+            address=assign_add(curr[1])
+            #Out.append(opcodeTable[curr[0]] + "000001" + address)
             Var_count += 1
             out_index += 1
             i += 1
@@ -218,5 +223,9 @@ for i in range(len(Source)):
             break
 
 
+file = open("stdout.txt", "w") 
 for line in Out:
-    print(line)
+    file.write(line)
+    file.write("\n")
+file.close()
+
