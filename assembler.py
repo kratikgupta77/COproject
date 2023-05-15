@@ -32,14 +32,15 @@ opcodeTable={   "var": "",
 }
 
 def dec_to_bin(n):
-    i=0
-    num=0
-    while(n!=0):
-        num+=(n%2)(10*i)
-        n=n//2
-        i+=1
-    n_num=str(num).zfill(8)
+    i = 0
+    num = 0
+    while n != 0:
+        num += (n % 2) * (10 ** i)
+        n = n // 2
+        i += 1
+    n_num = str(num).zfill(8)
     return n_num
+
 
 Out = []
 out_index = 0
