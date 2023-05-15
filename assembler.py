@@ -62,13 +62,13 @@ for i in range(len(Source)):
         
         
         if newcurr[0] in opcodeTable.keys() :
-            if newcurr[0] == "add" or newcurr[0] == "sub" or newcurr[0] == "mul" or newcurr[0] == "xor" or newcurr[0] == "or" or newcurr[0] == "and":
+            if newcurr[0] in ["add", "sub", "mul", "xor", "or", "and"]:
                 if length(newcurr) != 3:
                     Errors += 1
-                elif newcurr[1] or newcurr[2] or newcurr[3] not in regs.keys():
+                elif newcurr[1] not in regs.keys() or newcurr[2] not in regs.keys() or newcurr[3] not in regs.keys():
                     Errors += 1
                 else : 
-                    Out[out_index] = opcodeTable[newcurr[0]],regs[newcurr[1]],regs[newcurr[2]],regs[newcurr[2]]
+                    Out.append(opcodeTable[newcurr[0]]+regs[newcurr[1]]+regs[newcurr[2]]+regs[newcurr[2]])
                 out_index += 1
                 i += 1
             
@@ -79,7 +79,7 @@ for i in range(len(Source)):
                     if len(newcurr) != 2:
                         Errors += 1
                     else:
-                        Out[out_index] = tempval,regs[newcurr[1]],dec_to_bin(int(newcurr[2][1::]))
+                        Out.append(tempval + regs[newcurr[1]] + dec_to_bin(int(newcurr[2][1:])))
                     out_index+=1
                     i += 1
                 else :
@@ -87,123 +87,123 @@ for i in range(len(Source)):
                     if len(newcurr) != 2:
                         Errors += 1
                     else:
-                        Out[out_index] = tempval,regs[newcurr[1]],regs[newcurr[2]]
+                        Out.append(tempval + regs[newcurr[1]] + regs[newcurr[2]])
                     out_index+=1
                     i += 1
             
-            elif newcurr[0] == "rs" or newcurr[0] == "ls":
+            elif newcurr[0] in ["rs", "ls"]:
                 if len(newcurr) != 3:
                     Errors += 1
                 else :
-                    Out[out_index] = opcodeTable[newcurr[0]],regs[newcurr[1]],regs[newcurr[2]]
+                    Out.append(opcodeTable[newcurr[0]] + regs[newcurr[1]] + regs[newcurr[2]])
                 out_index += 1
                 i += 1
             
-            elif newcurr[0] == "div" or newcurr[0] == "not" or newcurr[0] == "cmp":
+            elif newcurr[0] in ["div", "not", "cmp"]:
                 if len(newcurr) != 3 :
                     Errors += 1 
                 else :
-                    Out[out_index] = opcodeTable[newcurr[0]],regs[newcurr[1]],regs[newcurr[2]]
+                    Out.append(opcodeTable[newcurr[0]] + regs[newcurr[1]] + regs[newcurr[2]])
                 out_index += 1 
                 i += 1
                     
-            elif newcurr[0] == "ld" or newcurr[0] === "st":
+            elif newcurr[0] in ["ld", "st"]:
                 if len(newcurr) != 3 :
                     Errors += 1
                 elif newcurr[2][0] != "$" :
                     Errors += 1
                 else :
-                    Out[out_index] = opcodeTable[newcurr[0]],regs[newcurr[1]],dec_to_bin(int(newcurr[2][1::]))
+                    Out.append(opcodeTable[newcurr[0]] + regs[newcurr[1]] + dec_to_bin(int(newcurr[2][1:])))
                 out_index += 1
                 i += 1
             
-            elif newcurr[0] == "jmp" or newcurr[0] == "jlt" or newcurr[0] == "jgt" or newcurr[0] == "je":
+            elif newcurr[0] in ["jmp", "jlt", "jgt", "je"]:
                 if len(newcurr) != 2:
                     Error += 1
                 elif newcurr[1][0] != "$":
                     Error += 1
                 else :
-                    Out[out_index] = opcodeTable[newcurr[0]],dec_to_bin(int(newcurr[1][1::]))
+                   Out.append(opcodeTable[newcurr[0]] + dec_to_bin(int(newcurr[1][1:])))
                 out_index += 1
                 i += 1
         
-    elif curr[0] in opcodeTable.keys() :
-        if curr[0] == "add" or curr[0] == "sub" or curr[0] == "mul" or curr[0] == "xor" or curr[0] == "or" or curr[0] == "and":
-            if length(curr) != 3:
+    elif curr[0] in opcodeTable.keys():
+        if curr[0] in ["add", "sub", "mul", "xor", "or", "and"]:
+            if len(curr) != 3:
                 Errors += 1
-            elif curr[1] or curr[2] or curr[3] not in regs.keys():
+            elif curr[1] not in regs.keys() or curr[2] not in regs.keys():
                 Errors += 1
-            else : 
-                Out[out_index] = opcodeTable[curr[0]],regs[curr[1]],regs[curr[2]],regs[curr[2]]
+            else:
+                Out.append(opcodeTable[curr[0]] + regs[curr[1]] + regs[curr[2]] + regs[curr[2]])
             out_index += 1
             i += 1
-        
+
         elif curr[0] == "mov":
             tempval = 0
             if curr[2][0] == "$":
-                opcodeTable[newcur[0][0]] = tempval
-                if len(curr) != 2:
+                opcodeTable[curr[0][0]] = tempval
+                if len(curr) != 3:
                     Errors += 1
                 else:
-                    Out[out_index] = tempval,regs[curr[1]],dec_to_bin(int(curr[2][1::]))
-                out_index+=1
+                    Out.append(tempval + regs[curr[1]] + dec_to_bin(int(curr[2][1:])))
+                out_index += 1
                 i += 1
-            else :
-                opcodeTable[newcur[0][1]] = tempval
-                if len(curr) != 2:
+            else:
+                opcodeTable[curr[0][1]] = tempval
+                if len(curr) != 3:
                     Errors += 1
                 else:
-                    Out[out_index] = tempval,regs[curr[1]],regs[curr[2]]
-                out_index+=1
+                    Out.append(tempval + regs[curr[1]] + regs[curr[2]])
+                out_index += 1
                 i += 1
-        
-        elif curr[0] == "rs" or curr[0] == "ls":
+
+        elif curr[0] in ["rs", "ls"]:
             if len(curr) != 3:
                 Errors += 1
-            else :
-                Out[out_index] = opcodeTable[curr[0]],regs[curr[1]],regs[curr[2]]
+            else:
+                Out.append(opcodeTable[curr[0]] + regs[curr[1]] + regs[curr[2]])
             out_index += 1
             i += 1
-        
-        elif curr[0] == "div" or curr[0] == "not" or curr[0] == "cmp":
-            if len(curr) != 3 :
-                Errors += 1 
-            else :
-                Out[out_index] = opcodeTable[curr[0]],regs[curr[1]],regs[curr[2]]
-            out_index += 1 
+
+        elif curr[0] in ["div", "not", "cmp"]:
+            if len(curr) != 3:
+                Errors += 1
+            else:
+                Out.append(opcodeTable[curr[0]] + regs[curr[1]] + regs[curr[2]])
+            out_index += 1
             i += 1
                 
-        elif curr[0] == "ld" or curr[0] === "st":
-            if len(curr) != 3 :
+        elif curr[0] in ["ld", "st"]:
+            if len(curr) != 3:
                 Errors += 1
-            elif curr[2][0] != "$" :
+            elif curr[2][0] != "$":
                 Errors += 1
-            else :
-                Out[out_index] = opcodeTable[curr[0]],regs[curr[1]],dec_to_bin(int(curr[2][1::]))
+            else:
+                Out.append(opcodeTable[curr[0]] + regs[curr[1]] + dec_to_bin(int(curr[2][1:])))
             out_index += 1
             i += 1
-        
-        elif curr[0] == "jmp" or curr[0] == "jlt" or curr[0] == "jgt" or curr[0] == "je":
+
+        elif curr[0] in ["jmp", "jlt", "jgt", "je"]:
             if len(curr) != 2:
-                Error += 1
+                Errors += 1
             elif curr[1][0] != "$":
-                Error += 1
-            else :
-                Out[out_index] = opcodeTable[curr[0]],dec_to_bin(int(curr[1][1::]))
+                Errors += 1
+            else:
+                Out.append(opcodeTable[curr[0]] + dec_to_bin(int(curr[1][1:])))
             out_index += 1
             i += 1
-        
+
         elif curr[0] == "var":
             Var_count += 1
-        out_index += 1
-        i += 1
-    
-    elif curr[0] == hlt:
-        if len(curr) != 1:
-            Errors += 1
-        else:
-            Out[out_index] = opcodeTable[curr[0]]
-        break
+            out_index += 1
+            i += 1
+
+        elif curr[0] == "hlt":
+            if len(curr) != 1:
+                Errors += 1
+            else:
+                Out.append(opcodeTable[curr[0]])
+            break
 
 
         
