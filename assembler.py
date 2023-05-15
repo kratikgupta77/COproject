@@ -1,3 +1,4 @@
+import sys
 regs = {
      'R0':'000',
      'R1':'001',
@@ -32,39 +33,42 @@ opcodeTable={   "var": "",
 }
 
 def dec_to_bin(n):
-    i = 0
-    num = 0
-    while n != 0:
-        num += (n % 2) * (10 ** i)
-        n = n // 2
-        i += 1
-    n_num = str(num).zfill(8)
+    i=0
+    num=0
+    while(n!=0):
+        num+=(n%2)(10*i)
+        n=n//2
+        i+=1
+    n_num=str(num).zfill(8)
     return n_num
-
 
 Out = []
 out_index = 0
 Var_count = 0
 Errors = 0
 Source = []
-for line in sys.stdin:
-    Source.append(line)
+#for line in sys.stdin:
+#    Source.append(line)
+with open("k12.txt", "r") as file:
+        for line in file:
+            Source.append(line.rstrip())
 
+
+print(source)
 for i in range(len(Source)):
     linenum = i+1
     labels = []
     
     curr = Source[i].split()
     if curr[0][::-1] == ":":
-        label , rest = curr.split(:)
+        label , rest = curr.split(':')
         labels.append(label)
         
         newcurr = rest.split()
         
-        
         if newcurr[0] in opcodeTable.keys() :
             if newcurr[0] in ["add", "sub", "mul", "xor", "or", "and"]:
-                if length(newcurr) != 3:
+                if len(newcurr) != 3:
                     Errors += 1
                 elif newcurr[1] not in regs.keys() or newcurr[2] not in regs.keys() or newcurr[3] not in regs.keys():
                     Errors += 1
@@ -76,18 +80,20 @@ for i in range(len(Source)):
             elif newcurr[0] == "mov":
                 tempval = 0
                 if newcurr[2][0] == "$":
-                    opcodeTable[newcur[0][0]] = tempval
+                    opcodeTable[newcurr[0][0]] = tempval
                     if len(newcurr) != 2:
                         Errors += 1
                     else:
+    
                         Out.append(tempval + regs[newcurr[1]] + dec_to_bin(int(newcurr[2][1:])))
                     out_index+=1
                     i += 1
                 else :
-                    opcodeTable[newcur[0][1]] = tempval
+                    opcodeTable[newcurr[0][1]] = tempval
                     if len(newcurr) != 2:
                         Errors += 1
                     else:
+    
                         Out.append(tempval + regs[newcurr[1]] + regs[newcurr[2]])
                     out_index+=1
                     i += 1
@@ -96,6 +102,7 @@ for i in range(len(Source)):
                 if len(newcurr) != 3:
                     Errors += 1
                 else :
+
                     Out.append(opcodeTable[newcurr[0]] + regs[newcurr[1]] + regs[newcurr[2]])
                 out_index += 1
                 i += 1
@@ -104,6 +111,7 @@ for i in range(len(Source)):
                 if len(newcurr) != 3 :
                     Errors += 1 
                 else :
+
                     Out.append(opcodeTable[newcurr[0]] + regs[newcurr[1]] + regs[newcurr[2]])
                 out_index += 1 
                 i += 1
@@ -114,16 +122,18 @@ for i in range(len(Source)):
                 elif newcurr[2][0] != "$" :
                     Errors += 1
                 else :
+
                     Out.append(opcodeTable[newcurr[0]] + regs[newcurr[1]] + dec_to_bin(int(newcurr[2][1:])))
                 out_index += 1
                 i += 1
             
             elif newcurr[0] in ["jmp", "jlt", "jgt", "je"]:
                 if len(newcurr) != 2:
-                    Error += 1
+                    Errors += 1
                 elif newcurr[1][0] != "$":
-                    Error += 1
+                    Errors += 1
                 else :
+
                    Out.append(opcodeTable[newcurr[0]] + dec_to_bin(int(newcurr[1][1:])))
                 out_index += 1
                 i += 1
@@ -146,6 +156,7 @@ for i in range(len(Source)):
                 if len(curr) != 3:
                     Errors += 1
                 else:
+
                     Out.append(tempval + regs[curr[1]] + dec_to_bin(int(curr[2][1:])))
                 out_index += 1
                 i += 1
@@ -154,6 +165,7 @@ for i in range(len(Source)):
                 if len(curr) != 3:
                     Errors += 1
                 else:
+
                     Out.append(tempval + regs[curr[1]] + regs[curr[2]])
                 out_index += 1
                 i += 1
@@ -180,7 +192,7 @@ for i in range(len(Source)):
             elif curr[2][0] != "$":
                 Errors += 1
             else:
-                Out.append(opcodeTable[curr[0]] + regs[curr[1]] + dec_to_bin(int(curr[2][1:])))
+                Out.append(opcodeTable[curr[0]] + regs[curr[1]] + bin(int(curr[2][1:])).replace("0b", "").zfill(7))
             out_index += 1
             i += 1
 
@@ -198,7 +210,6 @@ for i in range(len(Source)):
             Var_count += 1
             out_index += 1
             i += 1
-
         elif curr[0] == "hlt":
             if len(curr) != 1:
                 Errors += 1
@@ -207,22 +218,5 @@ for i in range(len(Source)):
             break
 
 
-        
-
-   
-   
-   
-   
-   
-   
-        
-
-        
-
-   
-   
-   
-   
-   
-   
-        
+for line in Out:
+    print(line)
