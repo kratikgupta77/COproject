@@ -65,7 +65,8 @@ Errors = 0
 Source = []
 #for line in sys.stdin:
 #    Source.append(line)
-for line in sys.stdin:
+code=sys.stdin.readlines()
+for line in code:
     Source.append(line)
 for i in range(len(Source)):
     linenum = i+1
@@ -223,9 +224,7 @@ for i in range(len(Source)):
             break
 
 
-file = open("stdout.txt", "w") 
 for line in Out:
-    file.write(line)
-    file.write("\n")
-file.close()
+    sys.stdout.write(line)
+    sys.stdout.write("\n")
 
